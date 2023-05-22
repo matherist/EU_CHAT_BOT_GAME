@@ -1,3 +1,4 @@
+import os
 import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -6,18 +7,21 @@ from aiogram.dispatcher.filters import Command
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.wsgi import get_wsgi_application
 from quiz.models import Question
-import settings
+from quiz_bot import settings
+import django
+# Инициализация Django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'quiz_bot.settings')
+
+# Инициализация Django
+django.setup()
+application = get_wsgi_application()
 
 # Инициализация бота и диспетчера
 bot = Bot(token=settings.TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
-
-# Настройка логирования
-logging.basicConfig(level=logging.INFO)
-
-
 # Определение состояний
 class QuizState(StatesGroup):
     waiting_for_answer = State()
